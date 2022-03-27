@@ -4,24 +4,29 @@ import pandas as pd
 
 class DGP(object):
 
-    def __init__(self, model, design, num_sample):
+    def __init__(self, model, design, num_sample, tau=0):
         self.model = model
         self.design = design
         if num_sample%4 == 0:
             self.n = num_sample
         else:
             raise ValueError("Number of sample needs to be 4*n.")
+        self.tuple_idx = None # for design=8
+        self.tau = tau
+
         self.X = self.generate_X()
         self.D, self.A = self.generate_DA()
         _, self.Y = self.generate_Y()
 
     def generate_X(self):
-        X = np.random.uniform(0,1,self.n)
+        if self.model == '5':
+            X = np.random.normal(0,1,self.n)
+        else:
+            X = np.random.uniform(0,1,self.n)
         return X
 
     def generate_DA(self):
         n, X, design = self.n, self.X, self.design
-        print(n,design)
         if design == '1':
             D = np.random.choice([0,1],size=n,p=[.5,.5])
             A = np.random.choice([0,1],size=n,p=[.5,.5])
@@ -67,11 +72,13 @@ class DGP(object):
             D[idx_treated_D] = 1
             A = np.zeros(n)
             A[idx_treated_A] = 1
-        elif design == '8':
+        elif design == '8' or design == '8p':
             idx = np.argsort(X).reshape(-1,4)
             df = pd.DataFrame(idx)
             idx = df.apply(lambda x:np.random.shuffle(x) or x, axis=1).to_numpy()
+            self.tuple_idx = idx
             D, A = np.zeros(n), np.zeros(n)
+            # (0,0) (0,1) (1,0), (1,1)
             D[idx[:,2]] = 1
             D[idx[:,3]] = 1
             A[idx[:,1]] = 1
@@ -109,7 +116,7 @@ class DGP(object):
                 dist = np.max(avgs) - np.min(avgs)
                 #print(dist)
         else:
-            raise ValueError('Model is not valid.')
+            raise ValueError('Design is not valid.')
         return D, A
 
     def generate_Y(self):
@@ -125,28 +132,35 @@ class DGP(object):
         eps = np.random.normal(0, 0.1, size=n)
     
         if model == '1':
-            for k in Y.keys():
-                Y[k] = (X - .5)
+            Y['0,1'] = (X - .5)
+            Y['1,1'] = (X - .5) + self.tau
+            Y['0,0'] = (X - .5)
+            Y['1,0'] = (X - .5) + self.tau
         elif model == '2':
             Y['0,1'] = (X - .5)
-            Y['1,1'] = (X - .5)
+            Y['1,1'] = (X - .5) + self.tau
             Y['0,0'] = -(X - .5)
-            Y['1,0'] = -(X - .5)
+            Y['1,0'] = -(X - .5) + self.tau
         elif model == '3':
             Y['0,1'] = np.sin(X - .5)
-            Y['1,1'] = np.sin(X - .5)
+            Y['1,1'] = np.sin(X - .5) + self.tau
             Y['0,0'] = np.sin(-(X - .5))
-            Y['1,0'] = np.sin(-(X - .5))
+            Y['1,0'] = np.sin(-(X - .5)) + self.tau
         elif model == '4':
-            Y['1,1'] = np.sin(X - .5) + X**2 - 1/3
-            Y['1,0'] = np.sin(-(X - .5)) + X**2 - 1/3
+            Y['1,1'] = np.sin(X - .5) + X**2 - 1/3 + self.tau
+            Y['1,0'] = np.sin(-(X - .5)) + X**2 - 1/3 + self.tau
             Y['0,1'] = np.sin(X - .5)
             Y['0,0'] = np.sin(-(X - .5))
         elif model == '5':
+            Y['1,1'] = np.sin(X) + X**2 - 1 + self.tau
+            Y['1,0'] = np.sin(-X) + X**2 - 1 + self.tau
+            Y['0,1'] = np.sin(X)
+            Y['0,0'] = np.sin(-X)
+        elif model == '6':
             Y['0,1'] = (X - .5)
-            Y['1,1'] = (X - .5)
+            Y['1,1'] = (X - .5) + self.tau
             Y['0,0'] = -(X - .5)
-            Y['1,0'] = -(X - .5)
+            Y['1,0'] = -(X - .5) + self.tau
             sigma['0,1'] *= X*X
             sigma['1,1'] *= X*X
             sigma['0,0'] *= X*X
