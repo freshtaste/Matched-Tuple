@@ -15,7 +15,7 @@ class Inference(object):
 
         self.tau1, self.tau0 = self.estimator()
         self.theta = (self.tau1 + self.tau0)/2
-        self.phi_tau1, self.phi_tau0, self.phi_theta = self.inference()
+        #self.phi_tau1, self.phi_tau0, self.phi_theta = self.inference()
 
     def estimator(self):
         Y, D, A = self.Y, self.D, self.A
@@ -83,9 +83,11 @@ class Inference(object):
         else:
             raise ValueError("Design is not valid.")
 
-        # compute test stats
-        phi_tau1 = 1 if np.abs(self.tau1-self.tau)/np.sqrt(var_tau1/(n/d)) <= 1.96 else 0
-        phi_tau0 = 1 if np.abs(self.tau0-self.tau)/np.sqrt(var_tau0/(n/d)) <= 1.96 else 0
-        phi_theta = 1 if np.abs(self.theta-self.tau)/np.sqrt(var_theta/(n/d)) <= 1.96 else 0
-        #print(self.tau1, np.abs(self.tau1)/np.sqrt(var_tau1/n))
+        # compute reject probability
+        phi_tau1 = 1 if np.abs(self.tau1)/np.sqrt(var_tau1/(n/d)) > 1.96 else 0
+        phi_tau0 = 1 if np.abs(self.tau0)/np.sqrt(var_tau0/(n/d)) > 1.96 else 0
+        phi_theta = 1 if np.abs(self.theta)/np.sqrt(var_theta/(n/d)) > 1.96 else 0
+        #phi_tau1 = 1 if np.abs(self.tau1-self.tau)/np.sqrt(var_tau1/(n/d)) <= 1.96 else 0
+        #phi_tau0 = 1 if np.abs(self.tau0-self.tau)/np.sqrt(var_tau0/(n/d)) <= 1.96 else 0
+        #phi_theta = 1 if np.abs(self.theta-self.tau)/np.sqrt(var_theta/(n/d)) <= 1.96 else 0
         return phi_tau1, phi_tau0, phi_theta
