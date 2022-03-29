@@ -31,13 +31,7 @@ class DGP(object):
             D = np.random.choice([0,1],size=n,p=[.5,.5])
             A = np.random.choice([0,1],size=n,p=[.5,.5])
         elif design == '2':
-            D, A = np.zeros(n), np.zeros(n)
-            D[int(n/2):] = 1
-            A[int(n/4):int(n/2)] = 1
-            A[int(3*n/4):] = 1
-            idx = np.random.permutation(n)
-            D = D[idx]
-            A = A[idx]
+            D, A = self.crd(n)
         elif design == '3' or design == '4':
             idx = np.argsort(X).reshape(-1,2)
             chosen_col = np.random.choice([0,1],size=idx.shape[0],p=[.5,.5])
@@ -84,20 +78,37 @@ class DGP(object):
             A[idx[:,1]] = 1
             A[idx[:,3]] = 1
         elif design == '9':
-            idx1, idx2 = np.random.permutation(int(n/2)), np.random.permutation(np.arange(int(n/2),n))
             D, A = np.zeros(n), np.zeros(n)
-            D[int(n/4):int(n/2)] = 1
-            D[int(3*n/4):] = 1
-            A[int(n/8):int(n/4)] = 1
-            A[int(3*n/8):int(n/2)] = 1
-            A[int(5*n/8):int(3*n/4)] = 1
-            A[int(7*n/8):] = 1
-
-            D[:int(n/2)] = D[idx1]
-            A[:int(n/2)] = A[idx1]
-            D[int(n/2):] = D[idx2]
-            A[int(n/2):] = A[idx2]
+            idx_s1, idx_s2 = self.X <= np.median(self.X), self.X > np.median(self.X)
+            D1, A1 = self.crd(int(n/2))
+            D2, A2 = self.crd(int(n/2))
+            D[idx_s1] = D1
+            A[idx_s1] = A1
+            D[idx_s2] = D2
+            A[idx_s2] = A2
+            self.tuple_idx = np.zeros(n)
+            self.tuple_idx[idx_s2] = 1
         elif design == '10':
+            D, A = np.zeros(n), np.zeros(n)
+            idx_s1, idx_s2 = self.X <= np.quantile(self.X, .25), (self.X <= np.median(self.X)) & (np.quantile(self.X, .25) < self.X)
+            idx_s3, idx_s4 = (self.X <= np.quantile(self.X, .75)) & (np.median(self.X) < self.X), np.quantile(self.X, .75) < self.X
+            D1, A1 = self.crd(int(n/4))
+            D2, A2 = self.crd(int(n/4))
+            D3, A3 = self.crd(int(n/4))
+            D4, A4 = self.crd(int(n/4))
+            D[idx_s1] = D1
+            A[idx_s1] = A1
+            D[idx_s2] = D2
+            A[idx_s2] = A2
+            D[idx_s3] = D3
+            A[idx_s3] = A3
+            D[idx_s4] = D4
+            A[idx_s4] = A4
+            self.tuple_idx = np.zeros(n)
+            self.tuple_idx[idx_s2] = 1
+            self.tuple_idx[idx_s3] = 2
+            self.tuple_idx[idx_s4] = 3
+        elif design == '11':
             eps = 0.01
             dist = 100
             while dist > eps:
@@ -180,6 +191,16 @@ class DGP(object):
         Yobs[(D==1) & (A==0)] = Y['1,0'][(D==1) & (A==0)]
         Yobs[(D==1) & (A==1)] = Y['1,1'][(D==1) & (A==1)]
         return Y, Yobs
+
+    def crd(self, n):
+        D, A = np.zeros(n), np.zeros(n)
+        D[int(n/2):] = 1
+        A[int(n/4):int(n/2)] = 1
+        A[int(3*n/4):] = 1
+        idx = np.random.permutation(n)
+        D = D[idx]
+        A = A[idx]
+        return D, A
 
 
 #if __name__ == '__main__':
