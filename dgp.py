@@ -109,7 +109,7 @@ class DGP(object):
             self.tuple_idx[idx_s3] = 2
             self.tuple_idx[idx_s4] = 3
         elif design == '11':
-            eps = 0.01
+            eps = 0.05
             dist = 100
             while dist > eps:
                 D, A = np.zeros(n), np.zeros(n)
@@ -141,41 +141,43 @@ class DGP(object):
             '1,0':np.ones(n)*2,
             '1,1':np.ones(n)*3}
         eps = np.random.normal(0, 0.1, size=n)
-    
+        #gamma11, gamma10, gamma01, gamma00 = 1, -1, 1, -1
+        gamma11, gamma10, gamma01, gamma00 = 2, 1/2, 1, -2
+        
         if model == '1':
-            Y['0,1'] = (X - .5)
-            Y['1,1'] = (X - .5) + self.tau
+            Y['0,1'] = (X - .5) + self.tau/2
+            Y['1,1'] = (X - .5) + 2*self.tau
             Y['0,0'] = (X - .5)
             Y['1,0'] = (X - .5) + self.tau
         elif model == '2':
-            Y['0,1'] = (X - .5)
-            Y['1,1'] = (X - .5) + self.tau
-            Y['0,0'] = -(X - .5)
-            Y['1,0'] = -(X - .5) + self.tau
+            Y['0,1'] = gamma01*(X - .5) + self.tau/2
+            Y['1,1'] = gamma11*(X - .5) + 2*self.tau
+            Y['0,0'] = gamma00*(X - .5)
+            Y['1,0'] = gamma10*(X - .5) + self.tau
         elif model == '3':
-            Y['0,1'] = np.sin(X - .5)
-            Y['1,1'] = np.sin(X - .5) + self.tau
-            Y['0,0'] = np.sin(-(X - .5))
-            Y['1,0'] = np.sin(-(X - .5)) + self.tau
+            Y['0,1'] = np.sin(gamma01*(X - .5)) + self.tau/2
+            Y['1,1'] = np.sin(gamma11*(X - .5)) + 2*self.tau
+            Y['0,0'] = np.sin(gamma00*(X - .5))
+            Y['1,0'] = np.sin(gamma10*(X - .5)) + self.tau
         elif model == '4':
-            Y['1,1'] = np.sin(X - .5) + X**2 - 1/3 + self.tau
-            Y['1,0'] = np.sin(-(X - .5)) + X**2 - 1/3 + self.tau
-            Y['0,1'] = np.sin(X - .5)
-            Y['0,0'] = np.sin(-(X - .5))
+            Y['1,1'] = np.sin(gamma11*(X - .5)) + X**2 - 1/3 + 2*self.tau
+            Y['1,0'] = np.sin(gamma10*(X - .5)) + X**2 - 1/3 + self.tau
+            Y['0,1'] = np.sin(gamma01*(X - .5)) + X**2 - 1/3 + self.tau/2
+            Y['0,0'] = np.sin(gamma00*(X - .5)) + X**2 - 1/3
         elif model == '5':
-            Y['1,1'] = np.sin(X) + X**2 - 1 + self.tau
-            Y['1,0'] = np.sin(-X) + X**2 - 1 + self.tau
-            Y['0,1'] = np.sin(X)
-            Y['0,0'] = np.sin(-X)
+            Y['1,1'] = np.sin(gamma11*X) + X**2 - 1 + 2*self.tau
+            Y['1,0'] = np.sin(gamma10*X) + X**2 - 1 + self.tau
+            Y['0,1'] = np.sin(gamma01*X) + X**2 - 1 + self.tau/2
+            Y['0,0'] = np.sin(gamma00*X) + X**2 - 1
         elif model == '6':
-            Y['0,1'] = (X - .5)
-            Y['1,1'] = (X - .5) + self.tau
-            Y['0,0'] = -(X - .5)
-            Y['1,0'] = -(X - .5) + self.tau
-            sigma['0,1'] *= X*X
-            sigma['1,1'] *= X*X
+            Y['0,1'] = gamma01*(X - .5) + self.tau/2
+            Y['1,1'] = gamma11*(X - .5) + 2*self.tau
+            Y['0,0'] = gamma00*(X - .5)
+            Y['1,0'] = gamma10*(X - .5) + self.tau
+            sigma['0,1'] *= 2*X*X
+            sigma['1,1'] *= 3*X*X
             sigma['0,0'] *= X*X
-            sigma['1,0'] *= X*X
+            sigma['1,0'] *= 2*X*X
         else:
             raise ValueError('Model is not valid.')
 
