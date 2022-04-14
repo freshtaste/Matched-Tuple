@@ -98,6 +98,7 @@ class Inference(object):
         else:
             raise ValueError("Design is not valid.")
         
+        #print(self.theta1, var_theta1, np.sqrt(var_theta1/(n/d)), np.abs(self.theta1)/np.sqrt(var_theta1/(n/d)), self.tuple_idx)
         # compute reject probability
         phi_tau11 = 1 if np.abs(self.tau11)/np.sqrt(var_tau11/(n/d)) > 1.96 else 0
         phi_tau10 = 1 if np.abs(self.tau10)/np.sqrt(var_tau10/(n/d)) > 1.96 else 0

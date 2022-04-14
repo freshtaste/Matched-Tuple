@@ -1,8 +1,10 @@
+import pandas as pd
+import numpy as np
 import os
 os.environ['R_HOME'] = "/Library/Frameworks/R.framework/Resources"
 from rpy2 import robjects
-import pandas as pd
-import numpy as np
+from rpy2.robjects import pandas2ri
+pandas2ri.activate()
 
 
 def nbpmatching(X):
@@ -43,11 +45,10 @@ def match_tuple(X, num_factor):
         matched_idx = nbpmatching(X)
         X = np.mean(X[matched_idx], axis=1)
         indices.append(matched_idx)
-    print(indices)
     real_idx = indices[0]
     for i in range(1,num_factor):
         idxi = indices[i]
         real_idx = np.concatenate((real_idx[idxi[:,0]], real_idx[idxi[:,1]]), axis=1)
     
     return real_idx
-        
+
