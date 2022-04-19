@@ -7,7 +7,7 @@ from nbpmatching import match_tuple
 
 class DGP2(object):
     
-    def __init__(self, num_factor, num_sample, Xdim, tau=0):
+    def __init__(self, num_factor, num_sample, Xdim, tau=0, match_more=False):
         self.tuple_size = 2**num_factor
         self.num_factor = num_factor
         if num_sample%(self.tuple_size*2) == 0:
@@ -16,22 +16,25 @@ class DGP2(object):
             raise ValueError("Number of sample needs to be 2^K*n.")
         self.tau = tau
         self.Xdim = Xdim
+        self.match_more = match_more
         self.all_treatments = self.get_treatment_combination()
         self.X = self.generate_X()
-        self.tuple_dix = self.get_tuple_idx()
+        self.tuple_idx = self.get_tuple_idx()
         self.D = self.generate_D()
         self.Y = self.generate_Y()
+        if self.match_more:
+            self.tuple_idx = self.tuple_idx.reshape(-1,self.tuple_size)
         
     def generate_X(self):
         X = np.random.uniform(0,1,size=(self.n,self.Xdim))
         return X
     
     def generate_D(self):
-        df = pd.DataFrame(self.tuple_dix)
+        df = pd.DataFrame(self.tuple_idx)
         idx = df.apply(lambda x:np.random.shuffle(x) or x, axis=1).to_numpy()
         D = np.zeros((self.n, self.num_factor))
         for c in range(idx.shape[1]):
-            D[idx[:,c]] = np.array([np.array(self.all_treatments[c])]*int(self.n/self.tuple_size))
+            D[idx[:,c]] = np.array([np.array(self.all_treatments[c])]*int(self.n/len(self.all_treatments)))
         return D
     
     def generate_Y(self):
@@ -43,6 +46,8 @@ class DGP2(object):
         
     def get_treatment_combination(self):
         lst = list(itertools.product([0, 1], repeat=self.num_factor))
+        if self.match_more:
+            return lst + lst
         return lst
     
     def get_tuple_idx(self):
@@ -51,6 +56,8 @@ class DGP2(object):
         shape (-1, 2^K) in order to calculate variance estimator
         """
         tuple_idx = match_tuple(self.X, self.num_factor+1)
+        if self.match_more:
+            return tuple_idx
         return tuple_idx.reshape(-1,self.tuple_size)
         
 
