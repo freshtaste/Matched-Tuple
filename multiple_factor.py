@@ -57,7 +57,22 @@ class DGP2(object):
             self.tuple_idx[idx_s3] = 2
             self.tuple_idx[idx_s4] = 3
         elif self.design == 'RE':
-            pass
+            eps = 2e-5*(self.Xdim**.5)*np.sqrt(self.num_factor*2)
+            dist = 100
+            while dist > eps:
+                D = np.array(self.all_treatments*int(self.n/len(self.all_treatments)))
+                idx = np.random.permutation(self.n)
+                D = D[idx]
+                taux = np.array([np.mean(self.X[D[:,f]==1] - self.X[D[:,f]==0], axis=0) for f in range(self.num_factor)])
+                dist = np.mean(taux**2)
+                #print(dist)
+        elif self.design == 'MP-B':
+            self.tuple_idx = match_tuple(self.X, 1)
+            df = pd.DataFrame(self.tuple_idx)
+            idx = df.apply(lambda x:np.random.shuffle(x) or x, axis=1).to_numpy()
+            D = np.zeros((self.n, self.num_factor))
+            D[idx[:,1],0] = 1
+            D[:,1:] = np.random.choice([0,1], size=(self.n, self.num_factor-1))
         else:
             raise ValueError("Design is not valid.")
         return D
@@ -65,7 +80,11 @@ class DGP2(object):
     def generate_Y(self):
         n, X, D = self.n, self.X, self.D
         eps = np.random.normal(0, 0.1, size=n)
-        Y = (X - .5).dot(np.linspace(1,2,self.Xdim)) \
+        if D.shape[1] > 1:
+            gamma = 2*D[:,1] - 1
+        else:
+            gamma = 1
+        Y = gamma*(X - .5).dot(np.linspace(1,2,self.Xdim)) \
             + (np.sum(D[:,1:],axis=1)/self.num_factor + D[:,0])*self.tau + eps
         return Y
         
