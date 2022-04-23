@@ -46,7 +46,8 @@ class DGP2(object):
         elif self.design == 'S4':
             self.tuple_idx = np.zeros(self.n)
             D = np.zeros((self.n, self.num_factor))
-            X = (self.X - .5).dot(np.linspace(1,2,self.Xdim))
+            #X = (self.X - .5).dot(np.linspace(1,2,self.Xdim))
+            X = self.X[:,-1]
             idx_s1, idx_s2 = X <= np.quantile(X, .25), (X <= np.median(X)) & (np.quantile(X, .25) < X)
             idx_s3, idx_s4 = (X <= np.quantile(X, .75)) & (np.median(X) < X), np.quantile(X, .75) < X
             D[idx_s1] = np.array(self.all_treatments*int(self.n/len(self.all_treatments)/4))
