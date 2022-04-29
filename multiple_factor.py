@@ -90,11 +90,11 @@ class DGP2(object):
         eps = np.random.normal(0, 0.1, size=n)
         if D.shape[1] > 1:
             gamma = 2*D[:,1] - 1
-            Y = gamma*(X - .5).dot(np.linspace(2,1,10)) \
+            Y = gamma*(X - .5).dot(np.linspace(1,.1,10)) \
                 + (np.mean(D[:,1:],axis=1) + D[:,0])*self.tau + eps
         else:
             gamma = 1
-            Y = gamma*(X - .5).dot(np.linspace(2,1,10)) \
+            Y = gamma*(X - .5).dot(np.linspace(1,.1,10)) \
                 + D[:,0]*self.tau + eps
         return Y
         
