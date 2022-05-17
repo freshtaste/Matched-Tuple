@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import pandas as pd
+from scipy.stats import chi2
 
 class DGP(object):
 
@@ -109,9 +110,9 @@ class DGP(object):
             self.tuple_idx[idx_s3] = 2
             self.tuple_idx[idx_s4] = 3
         elif design == '11':
-            eps = 0.05
+            a = chi2.ppf(.01**(1/2), 1)
             dist = 100
-            while dist > eps:
+            while dist > a:
                 D, A = np.zeros(n), np.zeros(n)
                 D[int(n/2):] = 1
                 A[int(n/4):int(n/2)] = 1
@@ -120,11 +121,11 @@ class DGP(object):
                 D = D[idx]
                 A = A[idx]
                 
-                avgs = [np.mean(X[(D==0) & (A==0)]),
-                        np.mean(X[(D==1) & (A==0)]),
-                        np.mean(X[(D==0) & (A==1)]),
-                        np.mean(X[(D==1) & (A==1)])]
-                dist = np.max(avgs) - np.min(avgs)
+                x_diff_A = np.mean(self.X[D==1] - self.X[D==0])
+                Mf_A = x_diff_A*(x_diff_A)*12*self.n/4
+                x_diff_B = np.mean(self.X[A==1] - self.X[A==0])
+                Mf_B = x_diff_B*(x_diff_B)*12*self.n/4
+                dist = max(Mf_A, Mf_B)
                 #print(dist)
         else:
             raise ValueError('Design is not valid.')
