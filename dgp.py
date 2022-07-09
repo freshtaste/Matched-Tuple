@@ -183,7 +183,7 @@ class DGP(object):
             raise ValueError('Model is not valid.')
 
         for k in Y.keys():
-            if model == '5':
+            if model == '6':
                 Y[k] += eps*sigma[k]
             else:
                 Y[k] += eps
