@@ -111,8 +111,10 @@ class DGP(object):
             self.tuple_idx[idx_s4] = 3
         elif design == '11':
             a = chi2.ppf(.01**(1/2), 1)
+            b = chi2.ppf(.01, 1)
             dist = 100
-            while dist > a:
+            dist2 = 100
+            while dist > a or dist2 > b:
                 D, A = np.zeros(n), np.zeros(n)
                 D[int(n/2):] = 1
                 A[int(n/4):int(n/2)] = 1
@@ -121,12 +123,20 @@ class DGP(object):
                 D = D[idx]
                 A = A[idx]
                 
+                if self.model == '5':
+                    covX = 1
+                else:
+                    covX = 1/12
+                
                 x_diff_A = np.mean(self.X[D==1] - self.X[D==0])
-                Mf_A = x_diff_A*(x_diff_A)*12*self.n/4
+                Mf_A = x_diff_A*(x_diff_A)*1/covX*self.n/4
                 x_diff_B = np.mean(self.X[A==1] - self.X[A==0])
-                Mf_B = x_diff_B*(x_diff_B)*12*self.n/4
+                Mf_B = x_diff_B*(x_diff_B)*1/covX*self.n/4
                 dist = max(Mf_A, Mf_B)
                 #print(dist)
+                
+                x_diff_interaction = np.mean(self.X[D==A] - self.X[D!=A])
+                dist2 = x_diff_interaction*(x_diff_interaction)*1/covX*self.n/4
         else:
             raise ValueError('Design is not valid.')
         return D, A
