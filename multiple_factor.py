@@ -62,18 +62,33 @@ class DGP2(object):
             self.tuple_idx[idx_s4] = 3
         elif self.design == 'RE':
             a = chi2.ppf(.01**(1/self.num_factor), self.Xdim)
+            num_interaction = self.num_factor*(self.num_factor-1)/2
+            if num_interaction == 0:
+                b = 0
+            else:
+                b = chi2.ppf(.01**(1/num_interaction), self.Xdim)
             Mf_max = 100
+            Mf_max_int = 100
             D = np.array(self.all_treatments*int(self.n/len(self.all_treatments)))
-            while Mf_max > a:
+            while Mf_max > a or Mf_max_int > b:
                 idx = np.random.permutation(self.n)
                 D = D[idx]
                 #taux = np.array([np.mean(self.X[D[:,f]==1] - self.X[D[:,f]==0], axis=0) for f in range(self.num_factor)])
                 Mf_max = 0
+                # compute maximum imbalance in main effects
                 for f in range(self.num_factor):
                     x_diff = np.mean(self.X[D[:,f]==1] - self.X[D[:,f]==0], axis=0)
                     Mf = x_diff.dot(x_diff)*12*self.n/4
                     if Mf > Mf_max:
                         Mf_max = Mf
+                Mf_max_int = 0
+                # compute maximum imbalance in interaction effects
+                for f1 in range(self.num_factor):
+                    for f2 in range(f1+1, self.num_factor):
+                        x_diff = np.mean(self.X[D[:,f1]==D[:,f2]] - self.X[D[:,f1]!=D[:,f2]], axis=0)
+                        Mf_int = x_diff.dot(x_diff)*12*self.n/4
+                        if Mf_int > Mf_max_int:
+                            Mf_max_int = Mf_int
         elif self.design == 'MP-B':
             self.tuple_idx = match_tuple(self.X, 1)
             df = pd.DataFrame(self.tuple_idx)
