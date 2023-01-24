@@ -216,7 +216,47 @@ class DGP(object):
         return D, A
 
 
+class DGP_Finite(DGP):
+    
+    def __init__(self, model, num_sample, design='8', tau=0):
+        self.model = model
+        self.design = design
+        if num_sample%4 == 0:
+            self.n = num_sample
+        else:
+            raise ValueError("Number of sample needs to be 4*n.")
+        self.tuple_idx = None # for design=8
+        self.tau = tau
+
+        self.X = self.generate_X()
+        self.D, self.A = self.generate_DA()
+        self.Y, Yobs = self.generate_Y()
+        self.tau10 = np.mean(self.Y['1,0']) - np.mean(self.Y['0,0'])
+        # get cluster indictors
+        tmp = np.arange(int(self.n/4))
+        cluster = np.zeros((self.n,))
+        for i in range(4):
+            cluster[self.tuple_idx[:,i]] = tmp
+        self.cluster = cluster.reshape(-1,)
+        
+    def get_data(self):
+        D, A = self.generate_DA()
+        
+        Yobs = np.zeros(self.n)
+        Yobs[(D==0) & (A==0)] = self.Y['0,0'][(D==0) & (A==0)]
+        Yobs[(D==0) & (A==1)] = self.Y['0,1'][(D==0) & (A==1)]
+        Yobs[(D==1) & (A==0)] = self.Y['1,0'][(D==1) & (A==0)]
+        Yobs[(D==1) & (A==1)] = self.Y['1,1'][(D==1) & (A==1)]
+        return Yobs, D, A
+        
+
 #if __name__ == '__main__':
 #    dgp = DGP('5','10',1000)
 #    print(dgp.Y[:5])
 #    print(dgp.design)
+
+#    dgp = DGP_Finite('5',1000)
+#    Yobs, D, A = dgp.get_data()
+#    print(Yobs[:5])
+#    Yobs, D, A = dgp.get_data()
+#    print(Yobs[:5])

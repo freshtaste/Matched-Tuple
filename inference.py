@@ -1,4 +1,5 @@
 import numpy as np
+import statsmodels.api as sm
 
 class Inference(object):
 
@@ -114,3 +115,60 @@ class Inference(object):
         #phi_tau0 = 1 if np.abs(self.tau0-self.tau)/np.sqrt(var_tau0/(n/d)) <= 1.96 else 0
         #phi_theta = 1 if np.abs(self.theta-self.tau)/np.sqrt(var_theta/(n/d)) <= 1.96 else 0
         return phi_tau11, phi_tau10, phi_theta1, phi_theta2, phi_theta12
+    
+    
+class Inference2(Inference):
+    
+    def __init__(self, Y, D, A, cluster, tuple_idx=None, tau=0):
+        self.Y = Y
+        self.D = D
+        self.A = A
+        self.cluster = cluster
+        self.tuple_idx = tuple_idx
+        self.tau = tau
+        self.tau11, self.tau10, self.theta1, self.theta2, self.theta12 = self.estimator()
+        
+    
+    def inference(self, method):
+        n, d = len(self.Y), 4
+        v10 = np.array([-1,0,1,0])
+        if method == 'mp':
+            Y_s = self.Y[self.tuple_idx] # (0,0) (0,1) (1,0), (1,1)
+            # estimate Gamma
+            gamma = np.mean(Y_s, axis=0)
+            # estimate sigma2
+            sigma2 = np.var(Y_s, axis=0)
+            # estimate rho_dd
+            rho2 = np.mean(Y_s[::2]*Y_s[1::2], axis=0)
+            # estimate rho_dd'
+            R = Y_s.T @ Y_s/(n/d)
+            rho = R - np.diag(np.diag(R)) + np.diag(rho2)
+            # compute V
+            V1 = np.diag(sigma2) - (np.diag(rho2) - np.diag(gamma**2))
+            V2 = (rho - gamma.reshape(-1,1) @ gamma.reshape(-1,1).T)/d
+            V = V1 + V2
+            self.var_tau10 = v10.dot(V).dot(v10)
+            self.se_tau10 = np.sqrt(self.var_tau10/(n/d))
+        else:
+            I11, I10, I01 = np.zeros(n), np.zeros(n), np.zeros(n)
+            I11[(self.D==1) & (self.A==1)] = 1
+            I10[(self.D==1) & (self.A==0)] = 1
+            I01[(self.D==0) & (self.A==1)] = 1
+            regressor = np.ones((n,4))
+            regressor[:,1] = I10
+            regressor[:,2] = I11
+            regressor[:,3] = I01
+            model = sm.OLS(self.Y,regressor)
+            if method == 'robust':
+                results = model.fit(cov_type='HC0')
+                self.se_tau10 = results.bse[1]
+            elif method == 'clustered':
+                results = model.fit(cov_type='cluster', cov_kwds={'groups':self.cluster})
+                self.se_tau10 = results.bse[1]
+            else:
+                raise ValueError("Inference method is not valid.")
+        if self.tau <= self.tau10 + 1.96*self.se_tau10 and self.tau >= self.tau10 - 1.96*self.se_tau10:
+            cover = 1
+        else:
+            cover = 0
+        return cover
