@@ -167,6 +167,7 @@ class Inference2(Inference):
                 self.se_tau10 = results.bse[1]
             else:
                 raise ValueError("Inference method is not valid.")
+        #print(self.se_tau10)
         if self.tau <= self.tau10 + 1.96*self.se_tau10 and self.tau >= self.tau10 - 1.96*self.se_tau10:
             cover = 1
         else:
