@@ -102,7 +102,7 @@ class DGP2(object):
     
     def generate_Y(self):
         n, X, D = self.n, self.Xall, self.D
-        eps = np.random.normal(0, 0.1, size=n)
+        eps = np.random.normal(0, 1, size=n)
         if D.shape[1] > 1:
             gamma = 2*D[:,1] - 1
             Y = gamma*(X - .5).dot(np.linspace(1,.1,10)) \

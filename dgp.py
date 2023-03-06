@@ -151,7 +151,7 @@ class DGP(object):
             '0,1':np.ones(n)*2,
             '1,0':np.ones(n)*2,
             '1,1':np.ones(n)*3}
-        eps = np.random.normal(0, 0.1, size=n)
+        eps = np.random.normal(0, 1, size=n)
         #gamma11, gamma10, gamma01, gamma00 = 1, -1, 1, -1
         gamma11, gamma10, gamma01, gamma00 = 2, 1/2, 1, -2
         

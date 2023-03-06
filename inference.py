@@ -172,4 +172,5 @@ class Inference2(Inference):
             cover = 1
         else:
             cover = 0
+        # length of CI
         return cover
