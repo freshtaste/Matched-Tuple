@@ -168,10 +168,10 @@ class DGP(object):
             Y['0,0'] = np.sin(gamma00*X)
             Y['1,0'] = np.sin(gamma10*X) + self.tau
         elif model == '4':
-            Y['1,1'] = np.sin(gamma11*X) + (X**2 - 1)/3 + 2*self.tau
-            Y['1,0'] = np.sin(gamma10*X) + (X**2 - 1)/3 + self.tau
-            Y['0,1'] = np.sin(gamma01*X) + (X**2 - 1)/3 + self.tau/2
-            Y['0,0'] = np.sin(gamma00*X) + (X**2 - 1)/3
+            Y['1,1'] = np.sin(X) + (X**2 - 1)/3 + 2*self.tau
+            Y['1,0'] = np.sin(X) + (X**2 - 1)/3 + self.tau
+            Y['0,1'] = np.sin(X) + (X**2 - 1)/3 + self.tau/2
+            Y['0,0'] = np.sin(X) + (X**2 - 1)/3
         elif model == '5':
             Y['1,1'] = np.sin(gamma11*X) + gamma11*X/10 + (X**2 - 1)/3 + 2*self.tau
             Y['1,0'] = np.sin(gamma10*X) + gamma10*X/10 + (X**2 - 1)/3 + self.tau
