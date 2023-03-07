@@ -1,7 +1,6 @@
 *.ipynb_checkpoints/
 *.DS_Store
 *.pyc
-*.csv
 *.txt
 .idea/
 __pyache__
