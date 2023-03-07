@@ -168,12 +168,12 @@ results_mse = []
 for m in designs:
     with open("simulation_real.txt", "a") as f:
         print(m, file=f)
-    qk_pairs = [(q,k) for q in [1,2,4,8,10] for k in [1,2,3,4,5,6]]
+    qk_pairs = [(q,k) for q in [1,2,4,6,9] for k in [1,2,3,4,5,6]]
     result = {(q,k): risk_parrell(covariates, k, q, 1280, tau=0, ntrials=10, more=True, design='MT') 
               if m == 'MT2' else risk_parrell(covariates, k, q, 1280, tau=0, ntrials=8, more=False, design=m) for q, k in qk_pairs}
     results_mse.append(result)
     baseline = results_mse[0][(1,1)]
-    for q in [1,2,4,8,10]:
+    for q in [1,2,4,6,9]:
         for k in [1,2,3,4,5,6]:
             with open("simulation_real.txt", "a") as f:
                 if k<6:
@@ -189,11 +189,11 @@ results_null = []
 for m in designs:
     with open("simulation_real.txt", "a") as f:
         print(m, file=f)
-    qk_pairs = [(q,k) for q in [1,2,4,8,10] for k in [1,2,3,4,5,6]]
+    qk_pairs = [(q,k) for q in [1,2,4,6,9] for k in [1,2,3,4,5,6]]
     result = {(q,k): reject_prob_parrell(covariates, k, q, 1280, tau=0, ntrials=10, more=True, design='MT')
               if m == 'MT2' else reject_prob_parrell(covariates, k, q, 1280, tau=0, ntrials=10, more=False, design=m) for q, k in qk_pairs}
     results_null.append(result)
-    for q in [1,2,4,8,10]:
+    for q in [1,2,4,6,9]:
         for k in [1,2,3,4,5,6]:
             with open("simulation_real.txt", "a") as f:
                 if k<6:
@@ -205,11 +205,11 @@ for m in designs:
 for m in designs:
     with open("simulation_real.txt", "a") as f:
         print(m, file=f)
-    qk_pairs = [(q,k) for q in [1,2,4,8,10] for k in [1,2,3,4,5,6]]
+    qk_pairs = [(q,k) for q in [1,2,4,6,9] for k in [1,2,3,4,5,6]]
     result = {(q,k): reject_prob_parrell(covariates, k, q, 1280, tau=0, ntrials=10, more=True, design='MT')
               if m == 'MT2' else reject_prob_parrell(covariates, k, q, 1280, tau=0.05, ntrials=10, more=False, design=m) for q, k in qk_pairs}
     results_null.append(result)
-    for q in [1,2,4,8,10]:
+    for q in [1,2,4,6,9]:
         for k in [1,2,3,4,5,6]:
             with open("simulation_real.txt", "a") as f:
                 if k<6:
