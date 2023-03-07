@@ -208,7 +208,7 @@ for m in designs:
         print(m, file=f)
     qk_pairs = [(q,k) for q in [1,2,4,6,9] for k in [1,2,3,4,5,6]]
     result = {(q,k): reject_prob_parrell(covariates, k, q, 1280, tau=0, ntrials=10, more=True, design='MT')
-              if m == 'MT2' else reject_prob_parrell(covariates, k, q, 1280, tau=0.05, ntrials=10, more=False, design=m) for q, k in qk_pairs}
+              if m == 'MT2' else reject_prob_parrell(covariates, k, q, 1280, tau=0.02, ntrials=10, more=False, design=m) for q, k in qk_pairs}
     results_null.append(result)
     for q in [1,2,4,6,9]:
         for k in [1,2,3,4,5,6]:
