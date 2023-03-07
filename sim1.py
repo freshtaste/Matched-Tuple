@@ -1,12 +1,8 @@
 import numpy as np
-from sklearn.datasets import make_spd_matrix
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
-from numpy.random import normal, multivariate_normal
-import matplotlib.pyplot as plt
 from dgp import DGP
 from inference import Inference
 from joblib import Parallel, delayed
-import multiprocessing
+
 
 def reject_prob_parrell(n, modelY='1', modelDA='1', ate=0, ntrials=1000):
     def process(i):
@@ -69,7 +65,7 @@ for i in range(6):
                         print("{:.3f} & ".format(mse[r,k]), end = '', file=f)
                 else:
                     print("{:.3f} \\\\".format(mse[r,k]), file=f)
-print("\n", file=f)
+        print("\n", file=f)
                     
 
 # report Reject Probability with ate=0
@@ -92,8 +88,8 @@ for i in range(6):
                     print("{:.3f} & ".format(prob[r,k]), end = '', file=f)
                 else:
                     print("{:.3f} \\\\".format(prob[r,k]), file=f)
-                    
-print("\n", file=f)
+        print("\n", file=f)
+        
 for i in range(6):
     print("ModelY={} (report Reject Probability with ate=0.05)".format(i+1))
     prob = np.zeros((5,5))
