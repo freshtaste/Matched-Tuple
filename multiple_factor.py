@@ -78,7 +78,7 @@ class DGP2(object):
                 # compute maximum imbalance in main effects
                 for f in range(self.num_factor):
                     x_diff = np.mean(self.X[D[:,f]==1] - self.X[D[:,f]==0], axis=0)
-                    Mf = x_diff.dot(x_diff)*12*self.n/4
+                    Mf = x_diff.dot(x_diff)*1*self.n/4
                     if Mf > Mf_max:
                         Mf_max = Mf
                 Mf_max_int = 0
@@ -105,11 +105,11 @@ class DGP2(object):
         eps = np.random.normal(0, 1, size=n)
         if D.shape[1] > 1:
             gamma = 2*D[:,1] - 1
-            Y = gamma*(X - .5).dot(np.linspace(1,.1,10)) \
+            Y = gamma*X.dot(np.linspace(1,.1,10)) \
                 + (np.mean(D[:,1:],axis=1) + D[:,0])*self.tau + eps
         else:
             gamma = 1
-            Y = gamma*(X - .5).dot(np.linspace(1,.1,10)) \
+            Y = gamma*X.dot(np.linspace(1,.1,10)) \
                 + D[:,0]*self.tau + eps
         return Y
         
