@@ -153,25 +153,25 @@ class DGP(object):
         gamma11, gamma10, gamma01, gamma00 = 2, 1/2, 1, -2
         
         if model == '1':
+            Y['0,1'] = X + self.tau/2
+            Y['1,1'] = X + 2*self.tau
+            Y['0,0'] = X 
+            Y['1,0'] = X + self.tau
+        elif model == '2':
             Y['0,1'] = X + (X**2 - 1)/3 + self.tau/2
             Y['1,1'] = X + (X**2 - 1)/3 + 2*self.tau
             Y['0,0'] = X + (X**2 - 1)/3 
             Y['1,0'] = X + (X**2 - 1)/3 + self.tau
-        elif model == '2':
+        elif model == '3':
             Y['0,1'] = gamma01*X + (X**2 - 1)/3 + self.tau/2
             Y['1,1'] = gamma11*X + (X**2 - 1)/3 + 2*self.tau
             Y['0,0'] = gamma00*X + (X**2 - 1)/3
             Y['1,0'] = gamma10*X + (X**2 - 1)/3 + self.tau
-        elif model == '3':
+        elif model == '4':
             Y['0,1'] = np.sin(gamma01*X) + self.tau/2
             Y['1,1'] = np.sin(gamma11*X) + 2*self.tau
             Y['0,0'] = np.sin(gamma00*X)
             Y['1,0'] = np.sin(gamma10*X) + self.tau
-        elif model == '4':
-            Y['1,1'] = np.sin(X) + (X**2 - 1)/3 + 2*self.tau
-            Y['1,0'] = np.sin(X) + (X**2 - 1)/3 + self.tau
-            Y['0,1'] = np.sin(X) + (X**2 - 1)/3 + self.tau/2
-            Y['0,0'] = np.sin(X) + (X**2 - 1)/3
         elif model == '5':
             Y['1,1'] = np.sin(gamma11*X) + gamma11*X/10 + (X**2 - 1)/3 + 2*self.tau
             Y['1,0'] = np.sin(gamma10*X) + gamma10*X/10 + (X**2 - 1)/3 + self.tau
