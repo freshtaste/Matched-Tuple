@@ -3,6 +3,26 @@ from multiple_factor import DGP2, Inferece2
 from joblib import Parallel, delayed
 
 
+def reject_prob(Xdim, num_factor, sample_size, tau=0, ntrials=1000, more=False, design='MT'):
+    phi_tau = np.zeros(ntrials)
+    for i in range(ntrials):
+        dgp = DGP2(num_factor, sample_size, Xdim, tau, more, design)
+        Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
+        inf = Inferece2(Y, D, tuple_idx, design)
+        phi_tau[i] = inf.phi_tau
+    return np.mean(phi_tau)
+
+
+def risk(Xdim, num_factor, sample_size, tau=0, ntrials=1000, more=False, design='MT'):
+    mse = np.zeros(ntrials)
+    for i in range(ntrials):
+        dgp = DGP2(num_factor, sample_size, Xdim, tau, more, design)
+        Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
+        ate = np.mean(Y[D[:,0]==1]) - np.mean(Y[D[:,0]==0])
+        mse[i] = (ate - tau)**2
+    return np.mean(mse)
+
+
 def reject_prob_parrell(Xdim, num_factor, sample_size, tau=0, ntrials=1000, more=False, design='MT'):
     def process(qk):
         dgp = DGP2(num_factor, sample_size, Xdim, tau, more, design)
