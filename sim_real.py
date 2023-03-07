@@ -34,6 +34,7 @@ class DGP3(DGP2):
     def generate_X(self):
         idx = np.random.choice(len(self.total), self.n, replace=False)
         total = self.total[idx]
+        self.Xtotal = total
         X = total[:,:self.Xdim]
         self.Y0 = total[:,-1]
         return X
@@ -107,11 +108,11 @@ class DGP3(DGP2):
         if self.D.shape[1] > 1:
             gamma = 2*self.D[:,1] - 1
             #gamma = 1
-            Y = gamma*self.X.dot(beta[:self.Xdim]) \
+            Y = gamma*self.Xtotal.dot(beta) \
                 + (np.mean(self.D[:,1:],axis=1) + self.D[:,0])*self.tau + eps
         else:
             gamma = 1
-            Y = gamma*self.X.dot(beta[:self.Xdim]) \
+            Y = gamma*self.Xtotal.dot(beta) \
                 + self.D[:,0]*self.tau + eps
         return Y
     
@@ -143,7 +144,7 @@ def reject_prob_parrell(X, num_factor, Xdim, sample_size, tau=0, ntrials=1000, m
         Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
         inf = Inferece2(Y, D, tuple_idx, design)
         return inf.phi_tau
-    num_cores = multiprocessing.cpu_count()
+    num_cores = multiprocessing.cpu_count() - 1
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     return np.mean(ret)
 
@@ -156,7 +157,7 @@ def risk_parrell(X, num_factor, Xdim, sample_size, tau=0, ntrials=1000, more=Fal
         Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
         ate = np.mean(Y[D[:,0]==1]) - np.mean(Y[D[:,0]==0])
         return (ate - tau)**2
-    num_cores = multiprocessing.cpu_count()
+    num_cores = multiprocessing.cpu_count() - 1
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     return np.mean(ret)
 
