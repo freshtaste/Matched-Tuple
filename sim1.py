@@ -94,7 +94,7 @@ for i in range(6):
     print("ModelY={} (report Reject Probability with ate=0.05)".format(i+1))
     prob = np.zeros((5,5))
     for j, d in enumerate(['1', '2', '8', '9', '10']):
-        phi_tau11s, phi_tau10s, phi_theta1s, phi_theta2s, phi_theta12s = reject_prob_parrell(1000, modelY=str(i+1), modelDA=d, ate=0.05, ntrials=2000)
+        phi_tau11s, phi_tau10s, phi_theta1s, phi_theta2s, phi_theta12s = reject_prob_parrell(1000, modelY=str(i+1), modelDA=d, ate=0.2, ntrials=2000)
         prob[j,0] = np.mean(phi_theta1s)
         prob[j,1] = np.mean(phi_theta2s)
         prob[j,2] = np.mean(phi_theta12s)
