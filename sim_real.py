@@ -34,7 +34,7 @@ class DGP3(DGP2):
     def generate_X(self):
         idx = np.random.choice(len(self.total), self.n, replace=False)
         total = self.total[idx]
-        self.Xtotal = total
+        self.Xtotal = total[:,:-1]
         X = total[:,:self.Xdim]
         self.Y0 = total[:,-1]
         return X
