@@ -21,7 +21,7 @@ class DGP(object):
 
     def generate_X(self):
         if self.model == '5':
-            X = np.random.normal(0,1,self.n)
+            X = np.random.normal(0,np.sqrt(0.1),self.n)
         else:
             X = np.random.uniform(0,1,self.n)
         return X
@@ -133,7 +133,7 @@ class DGP(object):
                 x_diff_B = np.mean(self.X[A==1] - self.X[A==0])
                 Mf_B = x_diff_B*(x_diff_B)*1/covX*self.n/4
                 dist = max(Mf_A, Mf_B)
-                #print(dist)
+                #print(dist, a)
                 
                 x_diff_interaction = np.mean(self.X[D==A] - self.X[D!=A])
                 dist2 = x_diff_interaction*(x_diff_interaction)*1/covX*self.n/4
@@ -151,7 +151,7 @@ class DGP(object):
             '0,1':np.ones(n)*2,
             '1,0':np.ones(n)*2,
             '1,1':np.ones(n)*3}
-        eps = np.random.normal(0, 1, size=n)
+        eps = np.random.normal(0, np.sqrt(0.25), size=n)
         #gamma11, gamma10, gamma01, gamma00 = 1, -1, 1, -1
         gamma11, gamma10, gamma01, gamma00 = 2, 1/2, 1, -2
         
