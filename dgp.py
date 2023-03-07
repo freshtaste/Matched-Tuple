@@ -182,10 +182,10 @@ class DGP(object):
             Y['1,1'] = gamma11*X + (X**2 - 1)/3 + 2*self.tau
             Y['0,0'] = gamma00*X + (X**2 - 1)/3
             Y['1,0'] = gamma10*X + (X**2 - 1)/3 + self.tau
-            sigma['0,1'] *= 2*X*X
-            sigma['1,1'] *= 3*X*X
-            sigma['0,0'] *= X*X
-            sigma['1,0'] *= 2*X*X
+            sigma['0,1'] *= 2*np.sqrt(np.abs(X))
+            sigma['1,1'] *= 3*np.sqrt(np.abs(X))
+            sigma['0,0'] *= np.sqrt(np.abs(X))
+            sigma['1,0'] *= 2*np.sqrt(np.abs(X))
         else:
             raise ValueError('Model is not valid.')
 
