@@ -123,7 +123,7 @@ def reject_prob_parrell(X, num_factor, sample_size, tau=0, ntrials=1000, more=Fa
         Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
         inf = Inferece2(Y, D, tuple_idx, design)
         return inf.phi_tau
-    num_cores = multiprocessing.cpu_count()
+    num_cores = 36
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     return np.mean(ret)
 
@@ -136,7 +136,7 @@ def risk_parrell(X, num_factor, sample_size, tau=0, ntrials=1000, more=False, de
         Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
         ate = np.mean(Y[D[:,0]==1]) - np.mean(Y[D[:,0]==0])
         return (ate - tau)**2
-    num_cores = multiprocessing.cpu_count()
+    num_cores = 36
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     return np.mean(ret)
 

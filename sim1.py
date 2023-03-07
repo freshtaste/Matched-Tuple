@@ -13,7 +13,7 @@ def reject_prob_parrell(n, modelY='1', modelDA='1', ate=0, ntrials=1000):
         dgp = DGP(modelY,modelDA,n,tau=ate)
         inf = Inference(dgp.Y, dgp.D, dgp.A, modelDA, tuple_idx=dgp.tuple_idx, tau=dgp.tau)
         return inf.inference()
-    num_cores = multiprocessing.cpu_count()
+    num_cores = 36
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     phi_tau11s, phi_tau10s, phi_theta1s, phi_theta2s, phi_theta12s = np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials)
     for i in range(ntrials):
@@ -29,7 +29,7 @@ def risk_parrell(n, modelY='1', modelDA='1', ate=0, ntrials=1000):
         dgp = DGP(modelY,modelDA,n,tau=ate)
         inf = Inference(dgp.Y, dgp.D, dgp.A, modelDA, tuple_idx=dgp.tuple_idx, tau=dgp.tau)
         return inf.tau11, inf.tau10, inf.theta1, inf.theta2, inf.theta12
-    num_cores = multiprocessing.cpu_count()
+    num_cores = 36
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     tau11s, tau10s, theta1s, theta2s, theta12s = np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials)
     for i in range(ntrials):

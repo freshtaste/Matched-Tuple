@@ -18,7 +18,7 @@ import multiprocessing
 
 model_specs = [(1,1),(8,1),(8,4)]
 taus_list = [np.linspace(0, .15, 24), np.linspace(0, .05, 24), np.linspace(0, .1, 24)]
-num_cores = multiprocessing.cpu_count()
+num_cores = 36
 
 results = {}
 for i, (q,k) in enumerate(model_specs):
