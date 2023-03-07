@@ -20,10 +20,10 @@ class DGP(object):
         _, self.Y = self.generate_Y()
 
     def generate_X(self):
-        if self.model == '5':
-            X = np.random.normal(0,np.sqrt(0.1),self.n)
-        else:
-            X = np.random.uniform(0,1,self.n)
+        #if self.model == '5':
+        X = np.random.normal(0,1,self.n)
+        #else:
+        #    X = np.random.uniform(0,1,self.n)
         return X
 
     def generate_DA(self):
@@ -123,10 +123,7 @@ class DGP(object):
                 D = D[idx]
                 A = A[idx]
                 
-                if self.model == '5':
-                    covX = 1
-                else:
-                    covX = 1/12
+                covX = 1
                 
                 x_diff_A = np.mean(self.X[D==1] - self.X[D==0])
                 Mf_A = x_diff_A*(x_diff_A)*1/covX*self.n/4
@@ -151,40 +148,40 @@ class DGP(object):
             '0,1':np.ones(n)*2,
             '1,0':np.ones(n)*2,
             '1,1':np.ones(n)*3}
-        eps = np.random.normal(0, np.sqrt(0.25), size=n)
+        eps = np.random.normal(0, 1, size=n)
         #gamma11, gamma10, gamma01, gamma00 = 1, -1, 1, -1
         gamma11, gamma10, gamma01, gamma00 = 2, 1/2, 1, -2
         
         if model == '1':
-            Y['0,1'] = (X - .5) + self.tau/2
-            Y['1,1'] = (X - .5) + 2*self.tau
-            Y['0,0'] = (X - .5)
-            Y['1,0'] = (X - .5) + self.tau
+            Y['0,1'] = X + self.tau/2
+            Y['1,1'] = X + 2*self.tau
+            Y['0,0'] = X
+            Y['1,0'] = X + self.tau
         elif model == '2':
-            Y['0,1'] = gamma01*(X - .5) + self.tau/2
-            Y['1,1'] = gamma11*(X - .5) + 2*self.tau
-            Y['0,0'] = gamma00*(X - .5)
-            Y['1,0'] = gamma10*(X - .5) + self.tau
+            Y['0,1'] = gamma01*X + self.tau/2
+            Y['1,1'] = gamma11*X + 2*self.tau
+            Y['0,0'] = gamma00*X
+            Y['1,0'] = gamma10*X + self.tau
         elif model == '3':
-            Y['0,1'] = np.sin(gamma01*(X - .5)) + self.tau/2
-            Y['1,1'] = np.sin(gamma11*(X - .5)) + 2*self.tau
-            Y['0,0'] = np.sin(gamma00*(X - .5))
-            Y['1,0'] = np.sin(gamma10*(X - .5)) + self.tau
+            Y['0,1'] = np.sin(gamma01*X) + self.tau/2
+            Y['1,1'] = np.sin(gamma11*X) + 2*self.tau
+            Y['0,0'] = np.sin(gamma00*X)
+            Y['1,0'] = np.sin(gamma10*X) + self.tau
         elif model == '4':
-            Y['1,1'] = np.sin(gamma11*(X - .5)) + X**2 - 1/3 + 2*self.tau
-            Y['1,0'] = np.sin(gamma10*(X - .5)) + X**2 - 1/3 + self.tau
-            Y['0,1'] = np.sin(gamma01*(X - .5)) + X**2 - 1/3 + self.tau/2
-            Y['0,0'] = np.sin(gamma00*(X - .5)) + X**2 - 1/3
-        elif model == '5':
             Y['1,1'] = np.sin(gamma11*X) + X**2 - 1 + 2*self.tau
             Y['1,0'] = np.sin(gamma10*X) + X**2 - 1 + self.tau
             Y['0,1'] = np.sin(gamma01*X) + X**2 - 1 + self.tau/2
             Y['0,0'] = np.sin(gamma00*X) + X**2 - 1
+        elif model == '5':
+            Y['1,1'] = np.sin(gamma11*X) + gamma11*X/10 + X**2 - 1 + 2*self.tau
+            Y['1,0'] = np.sin(gamma10*X) + gamma10*X/10 + X**2 - 1 + self.tau
+            Y['0,1'] = np.sin(gamma01*X) + gamma01*X/10 + X**2 - 1 + self.tau/2
+            Y['0,0'] = np.sin(gamma00*X) + gamma00*X/10 + X**2 - 1
         elif model == '6':
-            Y['0,1'] = gamma01*(X - .5) + self.tau/2
-            Y['1,1'] = gamma11*(X - .5) + 2*self.tau
-            Y['0,0'] = gamma00*(X - .5)
-            Y['1,0'] = gamma10*(X - .5) + self.tau
+            Y['0,1'] = gamma01*X + self.tau/2
+            Y['1,1'] = gamma11*X + 2*self.tau
+            Y['0,0'] = gamma00*X
+            Y['1,0'] = gamma10*X + self.tau
             sigma['0,1'] *= 2*X*X
             sigma['1,1'] *= 3*X*X
             sigma['0,0'] *= X*X

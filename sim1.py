@@ -13,7 +13,7 @@ def reject_prob_parrell(n, modelY='1', modelDA='1', ate=0, ntrials=1000):
         dgp = DGP(modelY,modelDA,n,tau=ate)
         inf = Inference(dgp.Y, dgp.D, dgp.A, modelDA, tuple_idx=dgp.tuple_idx, tau=dgp.tau)
         return inf.inference()
-    num_cores = 36
+    num_cores = 8
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     phi_tau11s, phi_tau10s, phi_theta1s, phi_theta2s, phi_theta12s = np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials)
     for i in range(ntrials):
@@ -29,7 +29,7 @@ def risk_parrell(n, modelY='1', modelDA='1', ate=0, ntrials=1000):
         dgp = DGP(modelY,modelDA,n,tau=ate)
         inf = Inference(dgp.Y, dgp.D, dgp.A, modelDA, tuple_idx=dgp.tuple_idx, tau=dgp.tau)
         return inf.tau11, inf.tau10, inf.theta1, inf.theta2, inf.theta12
-    num_cores = 36
+    num_cores = 8
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     tau11s, tau10s, theta1s, theta2s, theta12s = np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials), np.zeros(ntrials)
     for i in range(ntrials):
@@ -39,6 +39,7 @@ def risk_parrell(n, modelY='1', modelDA='1', ate=0, ntrials=1000):
         theta2s[i] = ret[i][3]
         theta12s[i] = ret[i][4]
     return tau11s, tau10s, theta1s, theta2s, theta12s
+
 
 
 # report MSE
@@ -68,7 +69,7 @@ for i in range(6):
                         print("{:.3f} & ".format(mse[r,k]), end = '', file=f)
                 else:
                     print("{:.3f} \\\\".format(mse[r,k]), file=f)
-                    
+print("\n", file=f)
                     
 
 # report Reject Probability with ate=0
@@ -84,7 +85,7 @@ for i in range(6):
         prob[j,4] = np.mean(phi_tau10s)
     prob = prob.T
     with open("simulation1.txt", "a") as f:
-        print("\n", file=f)
+        print("ModelY={}".format(i+1),file=f)
         for r in range(5):
             for k in range(5):
                 if k<4:
@@ -92,7 +93,7 @@ for i in range(6):
                 else:
                     print("{:.3f} \\\\".format(prob[r,k]), file=f)
                     
-                    
+print("\n", file=f)
 for i in range(6):
     print("ModelY={} (report Reject Probability with ate=0.05)".format(i+1))
     prob = np.zeros((5,5))
@@ -105,7 +106,7 @@ for i in range(6):
         prob[j,4] = np.mean(phi_tau10s)
     prob = prob.T
     with open("simulation1.txt", "a") as f:
-        print("\n", file=f)
+        print("ModelY={}".format(i+1),file=f)
         for r in range(5):
             for k in range(5):
                 if k<4:

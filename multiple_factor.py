@@ -32,7 +32,7 @@ class DGP2(object):
             self.tuple_idx = self.tuple_idx.reshape(-1,self.tuple_size)
         
     def generate_X(self):
-        self.Xall = np.random.uniform(0,1,size=(self.n,10))
+        self.Xall = np.random.normal(0,1,size=(self.n,10))
         X = self.Xall[:,:self.Xdim]
         return X
     
@@ -86,7 +86,7 @@ class DGP2(object):
                 for f1 in range(self.num_factor):
                     for f2 in range(f1+1, self.num_factor):
                         x_diff = np.mean(self.X[D[:,f1]==D[:,f2]] - self.X[D[:,f1]!=D[:,f2]], axis=0)
-                        Mf_int = x_diff.dot(x_diff)*12*self.n/4
+                        Mf_int = x_diff.dot(x_diff)*1*self.n/4
                         if Mf_int > Mf_max_int:
                             Mf_max_int = Mf_int
         elif self.design == 'MP-B':

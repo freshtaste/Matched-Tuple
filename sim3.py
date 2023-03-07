@@ -1,8 +1,6 @@
 import numpy as np
 from multiple_factor import DGP2, Inferece2
-from dgp import DGP
 from joblib import Parallel, delayed
-import multiprocessing
 
 
 def reject_prob_parrell(Xdim, num_factor, sample_size, tau=0, ntrials=1000, more=False, design='MT'):
@@ -11,7 +9,7 @@ def reject_prob_parrell(Xdim, num_factor, sample_size, tau=0, ntrials=1000, more
         Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
         inf = Inferece2(Y, D, tuple_idx, design)
         return inf.phi_tau
-    num_cores = 36
+    num_cores = 55
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     return np.mean(ret)
 
@@ -22,7 +20,7 @@ def risk_parrell(Xdim, num_factor, sample_size, tau=0, ntrials=1000, more=False,
         Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
         ate = np.mean(Y[D[:,0]==1]) - np.mean(Y[D[:,0]==0])
         return (ate - tau)**2
-    num_cores = 36
+    num_cores = 55
     ret = Parallel(n_jobs=num_cores)(delayed(process)(i) for i in range(ntrials))
     return np.mean(ret)
 
