@@ -150,6 +150,11 @@ class Inference2(Inference):
             V = V1 + V2
             self.var_tau10 = v10.dot(V).dot(v10)
             self.se_tau10 = np.sqrt(self.var_tau10/(n/d))
+            #print(V1)
+            #print(V2)
+            #print(Y_s[:10])
+            #print(sigma2, '\n', rho2,'\n', gamma**2)
+            #print(self.se_tau10)
         else:
             I11, I10, I01 = np.zeros(n), np.zeros(n), np.zeros(n)
             I11[(self.D==1) & (self.A==1)] = 1

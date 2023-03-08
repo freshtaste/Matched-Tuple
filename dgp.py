@@ -161,7 +161,7 @@ class DGP(object):
         if model == '1':
             Y['0,1'] = X + self.tau/2
             Y['1,1'] = X + 2*self.tau
-            Y['0,0'] = X
+            Y['0,0'] = X + 0
             Y['1,0'] = X + self.tau
         elif model == '2':
             Y['0,1'] = X + (X**2 - 1)/3 + self.tau/2
@@ -192,11 +192,6 @@ class DGP(object):
             sigma['1,1'] *= 3*np.sqrt(np.abs(X))
             sigma['0,0'] *= np.sqrt(np.abs(X))
             sigma['1,0'] *= 2*np.sqrt(np.abs(X))
-        elif model == '7':
-            Y['0,1'] = X/3 + self.tau/2
-            Y['1,1'] = X/3 + 2*self.tau
-            Y['0,0'] = X/3
-            Y['1,0'] = X/3 + self.tau
         else:
             raise ValueError('Model is not valid.')
 
@@ -243,6 +238,7 @@ class DGP_Finite(DGP):
         self.tau = tau
 
         self.X = self.generate_X()
+        print(self.X[:10])
         self.D, self.A = self.generate_DA()
         self.Y, Yobs = self.generate_Y()
         self.tau10 = np.mean(self.Y['1,0']) - np.mean(self.Y['0,0'])
@@ -255,7 +251,6 @@ class DGP_Finite(DGP):
         
     def get_data(self):
         D, A = self.generate_DA()
-        
         Yobs = np.zeros(self.n)
         Yobs[(D==0) & (A==0)] = self.Y['0,0'][(D==0) & (A==0)]
         Yobs[(D==0) & (A==1)] = self.Y['0,1'][(D==0) & (A==1)]
