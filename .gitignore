@@ -2,5 +2,7 @@
 *.DS_Store
 *.pyc
 *.txt
+finite_pop_cover_rate_cf.csv
+sup_pop_cover_rate_cf.csv
 .idea/
 __pyache__

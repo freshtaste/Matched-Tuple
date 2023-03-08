@@ -1,42 +1,35 @@
 import numpy as np
-from multiple_factor import DGP2, Inferece2
-from dgp import DGP
+from sim_real import DGP3, reject_prob_parrell, reject_prob
+from multiple_factor import Inferece2
 import pickle
-
-def reject_prob(Xdim, num_factor, sample_size, tau=0, ntrials=200, more=False, design='MT'):
-    phi_tau = np.zeros(ntrials)
-    for i in range(ntrials):
-        dgp = DGP2(num_factor, sample_size, Xdim, tau, more, design)
-        Y, D, tuple_idx = dgp.Y, dgp.D, dgp.tuple_idx
-        inf = Inferece2(Y, D, tuple_idx, design)
-        phi_tau[i] = inf.phi_tau
-    return np.mean(phi_tau)
-
-
 from joblib import Parallel, delayed
 import multiprocessing
 
 model_specs = [(1,1),(8,1),(8,4)]
-taus_list = [np.linspace(0, .15, 24), np.linspace(0, .05, 24), np.linspace(0, .1, 24)]
-num_cores = 36
+taus_list = [np.linspace(0, .1, 24), np.linspace(0, .1, 24), np.linspace(0, .1, 24)]
+num_cores = 50
 
 results = {}
 for i, (q,k) in enumerate(model_specs):
     result = {}
     def processInput(t):
-        mt = reject_prob(q, k, 1280, tau=t, ntrials=500, more=False, design='MT')
-        mt2 = reject_prob(q, k, 1280, tau=t, ntrials=500, more=True, design='MT')
+        mt = reject_prob_parrell(q, k, 1280, tau=t, ntrials=8, more=False, design='MT')
+        mt2 = reject_prob_parrell(q, k, 1280, tau=t, ntrials=8, more=True, design='MT')
         #mt, mt2 = 0, 1
-        c = reject_prob(q, k, 1280, tau=t, ntrials=500, more=False, design='C')
-        s4 = reject_prob(q, k, 1280, tau=t, ntrials=500, more=False, design='S4')
+        c = reject_prob_parrell(q, k, 1280, tau=t, ntrials=8, more=False, design='C')
+        s4 = reject_prob_parrell(q, k, 1280, tau=t, ntrials=8, more=False, design='S4')
         return (mt,mt2,c,s4)
-    ret = Parallel(n_jobs=num_cores)(delayed(processInput)(t) for t in taus_list[i])
+    #ret = Parallel(n_jobs=num_cores)(delayed(processInput)(t) for t in taus_list[i])
+    ret = [processInput(t) for t in taus_list[i]]
     result['MT'] = [r[0] for r in ret]
     result['MT2'] = [r[1] for r in ret]
     result['C'] = [r[2] for r in ret]
     result['S4'] = [r[3] for r in ret]
     results["q={},k={}".format(q,k)] = result
     print(q,k)
+    with open("simulation_5.txt", "a") as f:
+        print((q,k), file=f)
+        print(result, file=f)
 
 with open('simulation5_power_plots_new.pkl', 'wb') as f:
     pickle.dump(results, f)

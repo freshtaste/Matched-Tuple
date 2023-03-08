@@ -111,6 +111,7 @@ class Inference(object):
         self.var_theta1 = var_theta1
         self.var_theta2 = var_theta2
         self.var_theta12 = var_theta12
+        self.se_tau10 = np.sqrt(self.var_tau10/(n/d))
         #phi_tau1 = 1 if np.abs(self.tau1-self.tau)/np.sqrt(var_tau1/(n/d)) <= 1.96 else 0
         #phi_tau0 = 1 if np.abs(self.tau0-self.tau)/np.sqrt(var_tau0/(n/d)) <= 1.96 else 0
         #phi_theta = 1 if np.abs(self.theta-self.tau)/np.sqrt(var_theta/(n/d)) <= 1.96 else 0

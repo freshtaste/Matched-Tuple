@@ -18,11 +18,11 @@ def cover_rate(sample_size=1000, modelY='1', ntrials=2000):
         Yobs, D, A = dgp.get_data()
         inf = Inference2(Yobs, D, A, dgp.cluster, dgp.tuple_idx, dgp.tau10)
         cover[i,0] = inf.inference('mp')
-        cf_length[i,0] = inf.se_tau10*19.6*2
+        cf_length[i,0] = inf.se_tau10*1.96*2
         cover[i,1] = inf.inference('robust')
-        cf_length[i,1] = inf.se_tau10*19.6*2
+        cf_length[i,1] = inf.se_tau10*1.96*2
         cover[i,2] = inf.inference('clustered')
-        cf_length[i,2] = inf.se_tau10*19.6*2
+        cf_length[i,2] = inf.se_tau10*1.96*2
     return np.mean(cover, axis=0), np.mean(cf_length, axis=0)
 
 
@@ -34,11 +34,11 @@ def cover_rate_finite(sample_size=1000, modelY='1', ntrials=2000):
         Yobs, D, A = dgp.get_data()
         inf = Inference2(Yobs, D, A, dgp.cluster, dgp.tuple_idx, dgp.tau10)
         cover[i,0] = inf.inference('mp')
-        cf_length[i,0] = inf.se_tau10*19.6*2
+        cf_length[i,0] = inf.se_tau10*1.96*2
         cover[i,1] = inf.inference('robust')
-        cf_length[i,1] = inf.se_tau10*19.6*2
+        cf_length[i,1] = inf.se_tau10*1.96*2
         cover[i,2] = inf.inference('clustered')
-        cf_length[i,2] = inf.se_tau10*19.6*2
+        cf_length[i,2] = inf.se_tau10*1.96*2
     return np.mean(cover, axis=0), np.mean(cf_length, axis=0)
 
 

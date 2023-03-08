@@ -29,7 +29,26 @@ class DGP3(DGP2):
     def __init__(self, num_factor, Xdim, num_sample, X, tau=0, match_more=False, design='MT'):
         self.total = X
         self.covariates = X[:,:-1]
-        super().__init__(num_factor, num_sample, Xdim, tau, match_more, design)
+        self.tuple_size = 2**num_factor
+        self.num_factor = num_factor
+        if num_sample%(self.tuple_size*2) == 0:
+            self.n = num_sample
+        else:
+            raise ValueError("Number of sample needs to be 2^K*n.")
+        self.tau = tau
+        self.Xdim = Xdim
+        self.match_more = match_more
+        self.design = design
+        if match_more:
+            if self.design != 'MT':
+                raise ValueError("match_more is true only under MT")
+        self.tuple_idx = None
+        self.all_treatments = self.get_treatment_combination()
+        self.X = self.generate_X()
+        self.D = self.generate_D()
+        self.Y = self.generate_Y()
+        if self.match_more:
+            self.tuple_idx = self.tuple_idx.reshape(-1,self.tuple_size)
         
     def generate_X(self):
         idx = np.random.choice(len(self.total), self.n, replace=False)
@@ -170,8 +189,8 @@ for m in designs:
     with open("simulation_real.txt", "a") as f:
         print(m, file=f)
     qk_pairs = [(q,k) for q in [1,2,4,6,9] for k in [1,2,3,4,5,6]]
-    result = {(q,k): risk_parrell(covariates, k, q, 1280, tau=0, ntrials=10, more=True, design='MT') 
-              if m == 'MT2' else risk_parrell(covariates, k, q, 1280, tau=0, ntrials=8, more=False, design=m) for q, k in qk_pairs}
+    result = {(q,k): risk_parrell(covariates, k, q, 1280, tau=0, ntrials=1000, more=True, design='MT') 
+              if m == 'MT2' else risk_parrell(covariates, k, q, 1280, tau=0, ntrials=1000, more=False, design=m) for q, k in qk_pairs}
     results_mse.append(result)
     baseline = results_mse[0][(1,1)]
     for q in [1,2,4,6,9]:

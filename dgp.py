@@ -18,6 +18,12 @@ class DGP(object):
         self.X = self.generate_X()
         self.D, self.A = self.generate_DA()
         _, self.Y = self.generate_Y()
+        # get cluster indictors
+        tmp = np.arange(int(self.n/4))
+        cluster = np.zeros((self.n,))
+        for i in range(4):
+            cluster[self.tuple_idx[:,i]] = tmp
+        self.cluster = cluster.reshape(-1,)
 
     def generate_X(self):
         #if self.model == '5':
@@ -155,7 +161,7 @@ class DGP(object):
         if model == '1':
             Y['0,1'] = X + self.tau/2
             Y['1,1'] = X + 2*self.tau
-            Y['0,0'] = X 
+            Y['0,0'] = X
             Y['1,0'] = X + self.tau
         elif model == '2':
             Y['0,1'] = X + (X**2 - 1)/3 + self.tau/2
@@ -186,6 +192,11 @@ class DGP(object):
             sigma['1,1'] *= 3*np.sqrt(np.abs(X))
             sigma['0,0'] *= np.sqrt(np.abs(X))
             sigma['1,0'] *= 2*np.sqrt(np.abs(X))
+        elif model == '7':
+            Y['0,1'] = X/3 + self.tau/2
+            Y['1,1'] = X/3 + 2*self.tau
+            Y['0,0'] = X/3
+            Y['1,0'] = X/3 + self.tau
         else:
             raise ValueError('Model is not valid.')
 
@@ -200,6 +211,9 @@ class DGP(object):
         Yobs[(D==0) & (A==1)] = Y['0,1'][(D==0) & (A==1)]
         Yobs[(D==1) & (A==0)] = Y['1,0'][(D==1) & (A==0)]
         Yobs[(D==1) & (A==1)] = Y['1,1'][(D==1) & (A==1)]
+        
+        self.tau10 = np.mean(Y['1,0']) - np.mean(Y['0,0'])
+        
         return Y, Yobs
 
     def crd(self, n):
@@ -211,6 +225,9 @@ class DGP(object):
         D = D[idx]
         A = A[idx]
         return D, A
+    
+    def get_data(self):
+        return self.Y, self.D, self.A
 
 
 class DGP_Finite(DGP):
