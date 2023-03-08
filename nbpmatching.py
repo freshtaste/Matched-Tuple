@@ -29,6 +29,15 @@ def nbpmatching(X):
             matrix(arr, nrow = length(arr)/2, ncol = 2)
         }
         ''')
+    nbpmatch2 = robjects.r('''
+        nbpmatch <- function(df) {
+            library("nbpMatching")
+            df.1 <- runner(df, idcol=1)
+            arr = c(as.numeric(unlist(df.1$matches$halves["Group1.Row"])), 
+            as.numeric(unlist(df.1$matches$halves["Group2.Row"])))
+            matrix(arr, nrow = length(arr)/2, ncol = 2)
+        }
+        ''')
     res = nbpmatch(df).astype(int)
     return res
 
