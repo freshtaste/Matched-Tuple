@@ -1,14 +1,14 @@
 import numpy as np
-from sim_real import DGP3, reject_prob_parrell, reject_prob
+#from sim_real import DGP3, reject_prob_parrell, reject_prob
 from multiple_factor import Inferece2
 import pickle
 from joblib import Parallel, delayed
 import multiprocessing
 
-model_specs = [(1,1),(8,1),(8,4)]
+model_specs = [(1,1),(2,5),(6,5)]
 taus_list = [np.linspace(0, .1, 24), np.linspace(0, .1, 24), np.linspace(0, .1, 24)]
 num_cores = 50
-
+"""
 results = {}
 for i, (q,k) in enumerate(model_specs):
     result = {}
@@ -33,7 +33,11 @@ for i, (q,k) in enumerate(model_specs):
 
 with open('simulation5_power_plots_new.pkl', 'wb') as f:
     pickle.dump(results, f)
-    
+"""
+
+
+with open('simulation5_power_plots_new2.pkl', 'rb') as f:
+    results = pickle.load(f)
     
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
@@ -42,9 +46,9 @@ fig, axs = plt.subplots(1, 3, figsize=(30,12))
 styles = ['-', 'dashdot', ':', 'dashed']
 designs = ['MT','MT2','C','S4']
 width = [3,2,1.5,1.5]
-model_specs = [(1,1),(8,1),(8,4)]
-taus_list = [np.linspace(0, .15, 24), np.linspace(0, .05, 24), np.linspace(0, .1, 24)]
-rights = [.15, .05, .1]
+model_specs = [(1,1),(2,5),(6,5)]
+taus_list = [np.linspace(0, .1, 24), np.linspace(0, .1, 24), np.linspace(0, .15, 24)]
+rights = [.1, .1, .1]
 
 for i, (q,k) in enumerate(model_specs):
     for j, design in enumerate(designs):
@@ -71,9 +75,9 @@ fig, axs = plt.subplots(1, 3, figsize=(30,12))
 styles = ['-', 'dashdot', ':', 'dashed']
 designs = ['MT','MT2','C','S4']
 width = [3,2,1.5,1.5]
-model_specs = [(1,1),(8,1),(8,4)]
-taus_list = [np.linspace(0, .15, 24), np.linspace(0, .05, 24), np.linspace(0, .1, 24)]
-rights = [.05, .05, .05]
+model_specs = [(1,1),(2,5),(6,5)]
+taus_list = [np.linspace(0, .1, 24), np.linspace(0, .1, 24), np.linspace(0, .15, 24)]
+rights = [.1, .1, .15]
 
 for i, (q,k) in enumerate(model_specs):
     for j, design in enumerate(designs):
